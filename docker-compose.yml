@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  # PostgreSQL databáza
+  postgres:
+    image: postgres:15-alpine
+    container_name: bookio-postgres
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: bookio_pro
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Prisma Studio (voliteľné - na prezeranie databázy)
+  # Odkomentuj ak chceš GUI pre databázu
+  # prisma-studio:
+  #   build: ./backend
+  #   container_name: bookio-prisma-studio
+  #   command: npx prisma studio
+  #   ports:
+  #     - "5555:5555"
+  #   depends_on:
+  #     - postgres
+  #   environment:
+  #     DATABASE_URL: "postgresql://postgres:postgres@postgres:5432/bookio_pro?schema=public"
+
+volumes:
+  postgres_data:
+    driver: local
